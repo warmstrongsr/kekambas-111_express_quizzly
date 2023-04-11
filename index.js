@@ -12,7 +12,7 @@ app.use(express.urlencoded( { extended: true }))
 
 // Add logging middleware
 app.use((req, res, next) => {
-    console.log(req.path);
+    console.log(req.method, req.path);
     next();
 })
 
