@@ -30,7 +30,27 @@ const register = {
         return token
     }
 }
-
+const login = {
+	type: GraphQLString,
+	description: "Log in a user that exists in the database",
+	args: {
+		email: { type: GraphQLString },
+		password: { type: GraphQLString },
+	},
+	async resolve(parent, args) {
+		const { email, password } = args;
+		const user = await User.findOne({ email }).exec();
+		if (!user) {
+			throw new Error("User not found");
+		}
+		const passwordMatch = await bcrypt.compare(password, user.password);
+		if (!passwordMatch) {
+			throw new Error("Invalid login");
+		}
+		const token = createJWT(user);
+		return token;
+	},
+};
 
 module.exports = {
     register
