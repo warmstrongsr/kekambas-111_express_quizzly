@@ -7,10 +7,24 @@ const path = require('path');
 const { connectDB } = require('./src/db');
 const { graphqlHTTP} = require('express-graphql');
 const schema = require('./src/graphql/schema');
+const cookieParser = require('cookie-parser');
+const { authenticate } = require('./src/middleware/auth')
 
 
 // Execute the connectDB function to connect to our database
 connectDB();
+
+// Add logging middleware
+app.use((req, res, next) => {
+    console.log(req.method, req.path);
+    next();
+})
+
+// Add cookie parser middle ware
+app.use(cookieParser());
+
+// Add the authenticate middleware to the app AFTER cookieParser middleware
+app.use(authenticate);
 
 // Add graphql middleware
 app.use('/graphql', graphqlHTTP({
@@ -25,11 +39,6 @@ app.set('views', path.join(__dirname, 'src/templates/views'));
 // Set up middleware to parse form data and add body property to the request
 app.use(express.urlencoded( { extended: true }))
 
-// Add logging middleware
-app.use((req, res, next) => {
-    console.log(req.method, req.path);
-    next();
-})
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
