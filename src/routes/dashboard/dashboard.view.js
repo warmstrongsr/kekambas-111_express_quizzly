@@ -1,3 +1,3 @@
 module.exports = (req, res) => {
-    res.send('Hello World from the Main Dashboard');
+    res.render('dashboard', { user: req.verifiedUser});
 };
